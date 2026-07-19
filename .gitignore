@@ -1,0 +1,57 @@
+# Ignore everything inside the .github folder
+.github/*
+
+# But do not ignore your CI/CD workflow files
+!.github/workflows/
+
+# Ignore all files in the LucidTechAPI/Properties/PublishProfiles and ServiceDependencies folders 
+ServiceBookingAPI/Properties/PublishProfiles/
+ServiceBookingAPI/Properties/ServiceDependencies/
+
+# Standard .NET build and local user caching targets
+[Bb]in/
+[Oo]bj/
+/node_modules
+/.vs
+/.vscode
+/packages
+/TestResults
+
+# Rider
+.idea/
+*.iml
+
+# dotnet tool restore
+.config/dotnet-tools.json
+.config/dotnet-tools/
+
+# Secret Manager
+appsettings.Development.json
+appsettings.json
+appsettings.*.json
+launchSettings.json
+
+# Azure Functions
+AzureFunctions.Templates.json
+
+# Local user secrets
+*.user
+*.suo
+
+# NuGet
+*.nupkg
+*.snupkg
+
+# Terraform specific ignores
+.terraform/
+.terraform.lock.hcl
+terraform/.terraform.tfstate.lock.info
+*.tfplan
+*.tfstate
+*.tfstate.backup
+crash.log
+terraform.tfstate
+*.backup
+crash.log
+
+creds.txt
