@@ -42,6 +42,16 @@ public class BusinessProfile : BaseEntity, IAggregateRoot
 
         _employees.Add(new Employee(name, emailVo, position));
     }
+    public void UpdateEmployees(List<Employee> employees)
+    {
+        // Business Rule Example: A profile must have at least one active employee
+        if (!employees.Any(e => e.IsActive))
+            throw new Exception("At least one active employee is required.");
+
+        // Logic to update the internal collection
+        this._employees.Clear();
+        this._employees.AddRange(employees); // Add directly. Check duplicate emails using Validator
+    }
 
     public void AddServiceCategory(string name, string imageUrl)
     {
@@ -58,6 +68,17 @@ public class BusinessProfile : BaseEntity, IAggregateRoot
         _serviceCategories.Add(category);
     }
 
+    public void UpdateCategories(List<ServiceCategory> categories)
+    {
+        // Business Rule Example: A profile must have at least one active employee
+        //if (!categories.Any(e => e.Is))
+        //    throw new Exception("At least one active employee is required.");
+
+        // Logic to update the internal collection
+        this._serviceCategories.Clear();
+        this._serviceCategories.AddRange(categories); // Add directly. Check duplicate emails using Validator
+    }
+
     public void AddServiceToCategory(string categoryId, string name, string description, decimal price, int durationInMinutes)
     {
         var category = _serviceCategories.FirstOrDefault(c => c.Id == categoryId);
@@ -67,5 +88,21 @@ public class BusinessProfile : BaseEntity, IAggregateRoot
         var durationVo = Duration.FromMinutes(durationInMinutes);
 
         category.AddService(name, description, price, durationVo);
+    }
+
+    // DDD: Use a method to perform the update
+    public void UpdateDetails(string logoUrl, string name, List<Employee> employees, List<ServiceCategory> categories)
+    {
+        // Add business validation here
+        if (string.IsNullOrWhiteSpace(name))
+            throw new Exception("Category not found."); //throw new DomainException("Name is required.");
+
+        this.LogoUrl = logoUrl;
+        this.UpdateName(name);
+        this.UpdateEmployees(employees);
+        this.UpdateCategories(categories);
+
+        // In DDD, you might also trigger a Domain Event here
+        // AddDomainEvent(new BusinessProfileUpdated(this));
     }
 }

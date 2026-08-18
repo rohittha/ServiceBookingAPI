@@ -1,10 +1,10 @@
-﻿using ServiceBooking.Domain.Common;
-using ServiceBooking.Domain.ValueObjects;
+﻿using ServiceBooking.Domain.ValueObjects;
 
 namespace ServiceBooking.Domain.Entities;
 
-public class Service : BaseEntity
+public class Service
 {
+    public string Id { get; private set; } = Guid.NewGuid().ToString();
     public string Name { get; private set; } = null!;
     public string Description { get; private set; } = null!;
     public decimal Price { get; private set; }
@@ -12,10 +12,11 @@ public class Service : BaseEntity
 
     // EF Core Constructor
     private Service() { }
-    // Internal constructor: Only ServiceCategory or BusinessProfile should create this
+
     internal Service(string name, string description, decimal price, Duration duration)
     {
-        if(string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Name cannot be empty.");
+        Id = Guid.NewGuid().ToString();
+        if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Name cannot be empty.");
         if (price < 0) throw new ArgumentException("Price cannot be negative.");
 
         Name = name;

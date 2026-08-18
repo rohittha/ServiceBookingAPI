@@ -1,21 +1,23 @@
-﻿using ServiceBooking.Domain.Common;
-using ServiceBooking.Domain.ValueObjects;
+﻿using ServiceBooking.Domain.ValueObjects;
 
 namespace ServiceBooking.Domain.Entities;
-public class Employee : BaseEntity
+public class Employee
 {
+    public string Id { get; private set; } = Guid.NewGuid().ToString();
     public string Name { get; private set; } = null!;
-    public Email Email { get; private set; } = null!; // Changed
+    public Email Email { get; private set; } = null!;
     public string Position { get; private set; } = null!;
     public bool IsActive { get; private set; } = true;
 
     private readonly List<string> _serviceIds = new();
     public IReadOnlyCollection<string> ServiceIds => _serviceIds.AsReadOnly();
 
-    // EF Core Constructor
+    // EF Core
     private Employee() { }
-    internal Employee(string name, Email email, string position)
+
+    public Employee(string name, Email email, string position)
     {
+        Id = Guid.NewGuid().ToString();
         Name = name;
         Email = email;
         Position = position;

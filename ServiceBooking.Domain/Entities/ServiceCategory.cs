@@ -1,10 +1,10 @@
-﻿using ServiceBooking.Domain.Common;
-using ServiceBooking.Domain.ValueObjects;
+﻿using ServiceBooking.Domain.ValueObjects;
 
 namespace ServiceBooking.Domain.Entities;
 
-public class ServiceCategory : BaseEntity
+public class ServiceCategory
 {
+    public string Id { get; private set; } = Guid.NewGuid().ToString();
     public string Name { get; private set; } = null!;
     public string ImageUrl { get; private set; } = null!;
 
@@ -13,8 +13,10 @@ public class ServiceCategory : BaseEntity
 
     // EF Core Constructor
     private ServiceCategory() { }
-    internal ServiceCategory(string name, string imageUrl)
+
+    public ServiceCategory(string name, string imageUrl)
     {
+        Id = Guid.NewGuid().ToString();
         if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Name cannot be empty.");
         if (string.IsNullOrWhiteSpace(imageUrl)) throw new ArgumentException("ImageUrl cannot be empty.");
         Name = name;
