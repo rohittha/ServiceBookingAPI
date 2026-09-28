@@ -12,29 +12,20 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddControllers();
 
+// 1. ADD CORS SERVICE
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-//// Add OpenTelemetry and configure it to use Azure Monitor.
-//builder.Services.AddOpenTelemetry().UseAzureMonitor();
-//// Setting role name and role instance
-
-//// Create a dictionary of resource attributes.
-//var resourceAttributes = new Dictionary<string, object> {
-//    { "service.name", "servicebooking" },
-//    { "service.namespace", "servicebooking.api" },
-//    { "service.instance.id", "servicebooking" }};
-
-//// Add the OpenTelemetry telemetry service to the application.
-//// This service will collect and send telemetry data to Azure Monitor.
-//builder.Services.AddOpenTelemetry()
-//    .UseAzureMonitor()
-//    // Configure the ResourceBuilder to add the custom resource attributes to all signals.
-//    // Custom resource attributes should be added AFTER AzureMonitor to override the default ResourceDetectors.
-//    .ConfigureResource(resourceBuilder => resourceBuilder.AddAttributes(resourceAttributes));
-
-
 
 var app = builder.Build();
 
@@ -50,7 +41,7 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.UseAuthorization(); app.UseCors("AllowAll");
 
 app.MapControllers();
 

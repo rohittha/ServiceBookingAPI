@@ -6,8 +6,13 @@ namespace ServiceBooking.WebUI.Middleware;
 public class ExceptionHandlingMiddleware
 {
     private readonly RequestDelegate _next;
+    private readonly ILogger<ExceptionHandlingMiddleware> _logger; // 1. Inject ILogger
 
-    public ExceptionHandlingMiddleware(RequestDelegate next) => _next = next;
+    public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
+    {
+        _next = next;
+        _logger = logger; // 1. Assign the injected logger
+    }
 
     public async Task Invoke(HttpContext context)
     {
@@ -16,7 +21,11 @@ public class ExceptionHandlingMiddleware
             await _next(context);
         }
         catch (Exception ex)
-        {
+        { 
+            // 2. Log the exception so Application Insights catches it.
+            // IMPORTANT: Pass the exception (ex) as the FIRST argument.
+            _logger.LogError(ex, "An unhandled exception occurred: {Message}", ex.Message);
+
             await HandleExceptionAsync(context, ex);
         }
     }
@@ -26,19 +35,12 @@ public class ExceptionHandlingMiddleware
         var code = exception switch
         {
             ValidationException => StatusCodes.Status400BadRequest,
-            KeyNotFoundException => StatusCodes.Status404NotFound,
             _ => StatusCodes.Status500InternalServerError
         };
 
-        var result = JsonSerializer.Serialize(new
-        {
-            error = exception.Message,
-            details = exception is ValidationException vex ? vex.Errors.Select(e => e.ErrorMessage) : null
-        });
-
+        var result = JsonSerializer.Serialize(new { error = exception.Message });
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = code;
-
         return context.Response.WriteAsync(result);
     }
 }

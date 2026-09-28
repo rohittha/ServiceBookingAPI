@@ -1,4 +1,6 @@
-﻿namespace ServiceBooking.Domain.Common;
+﻿using MediatR;
+
+namespace ServiceBooking.Domain.Common; 
 
 public abstract class BaseEntity
 {
@@ -13,7 +15,7 @@ public abstract class BaseEntity
     public void ClearDomainEvents() => _domainEvents.Clear();
 }
 
-public abstract class BaseEvent
+public abstract class BaseEvent : INotification
 {
     public DateTime DateOccurred { get; protected set; } = DateTime.UtcNow;
 }
