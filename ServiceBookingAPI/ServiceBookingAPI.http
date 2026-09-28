@@ -3,4 +3,12 @@
 GET {{ServiceBookingAPI_HostAddress}}/weatherforecast/
 Accept: application/json
 
+{
+  "businessId": "046a5f13-f652-4343-a7f3-a24b0d7f609f",
+  "serviceId": "150bb9a2-80f2-4e92-9d59-2fbd26f6e492",
+  "employeeId": "c74b56ac-9685-44bc-9021-4a41f1398796",
+  "bookingDateTime": "2026-09-29T11:41:10.075Z",
+  "customerEmail": "abc2143@27sep.com"
+}
+
 ###
