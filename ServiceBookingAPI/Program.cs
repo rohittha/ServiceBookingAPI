@@ -2,6 +2,7 @@ using Azure.Monitor.OpenTelemetry.AspNetCore;
 using OpenTelemetry.Resources;
 using ServiceBooking.Application;
 using ServiceBooking.Infrastructure;
+using ServiceBooking.Infrastructure.Messaging;
 using ServiceBooking.WebUI.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddApplicationServices(); // (Assuming you have an Application/DependencyInjection.cs)
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
+//builder.Services.AddHostedService<BookingCreatedEmailConsumer>();
 
 builder.Services.AddControllers();
 
