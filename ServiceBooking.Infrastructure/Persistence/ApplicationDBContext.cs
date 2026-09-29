@@ -16,7 +16,7 @@ public class ApplicationDbContext : DbContext, IUnitOfWork
 
     public ApplicationDbContext(
         DbContextOptions<ApplicationDbContext> options,
-        IMediator? mediator = null) : base(options)
+        IMediator? mediator) : base(options)
     {
         _mediator = mediator;
     }
@@ -62,10 +62,43 @@ public class ApplicationDbContext : DbContext, IUnitOfWork
     // --- 2. SAVE CHANGES WITH DOMAIN EVENT DISPATCH ---
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
+        Console.WriteLine($"---> [Gate A1] DispatchDomainEventsAsync called. Is _mediator null? {(_mediator == null)}");
+
+        // 1. Extract and clear domain events from tracked entities BEFORE saving
+        var entitiesWithEvents = ChangeTracker.Entries<BaseEntity>()
+            .Where(e => e.Entity.DomainEvents.Any())
+            .ToList();
+
+        Console.WriteLine($"---> [Gate A2] Tracked entities with domain events: {entitiesWithEvents.Count}");
+
+        var domainEvents = entitiesWithEvents
+            .SelectMany(e => e.Entity.DomainEvents)
+            .ToList();
+
+        entitiesWithEvents.ForEach(e => e.Entity.ClearDomainEvents());
+
+        // 2. Persist state to the Database
         var result = await base.SaveChangesAsync(cancellationToken);
-        await DispatchDomainEventsAsync(cancellationToken);
+
+        // 3. Dispatch the events via MediatR
+        if (_mediator != null && domainEvents.Any())
+        {
+            foreach (var domainEvent in domainEvents)
+            {
+                await _mediator.Publish((object)domainEvent, cancellationToken);
+            }
+        }
+
         return result;
     }
+
+    //public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    //{
+    //    var result = await base.SaveChangesAsync(cancellationToken);
+    //    await DispatchDomainEventsAsync(cancellationToken);
+    //    return result;
+    //}
+
 
     // --- 3. DISPATCH METHOD CASTING TO (object) ---
     private async Task DispatchDomainEventsAsync(CancellationToken cancellationToken)
